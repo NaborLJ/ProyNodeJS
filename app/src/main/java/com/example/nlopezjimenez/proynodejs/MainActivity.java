@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -24,7 +25,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
-
+import org.json.JSONObject;
+import org.json.JSONException;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -169,9 +171,35 @@ public class MainActivity extends AppCompatActivity
 
     }
     public void sendMessage() {
-        EditText editText = (EditText)findViewById(R.id.message);
-        mWebSocketClient.send(editText.getText().toString());
-        editText.setText("");
+
+        EditText msg = (EditText)findViewById(R.id.message);
+        EditText destin = (EditText)findViewById(R.id.destino);
+        CheckBox box = (CheckBox)findViewById(R.id.priv);
+        msg.setText("");
+        String d,m;
+        Boolean bl;
+        d = destin.getText().toString();
+        m = msg.getText().toString();
+        if(box.isChecked()) {
+            bl = Boolean.TRUE ;
+        }else{
+            bl = Boolean.FALSE;
+        }
+        JSONObject json = new JSONObject();
+        try {
+            json.put("id","Nabor");
+            json.put("message",m);
+            json.put("destino",d);
+            json.put("Privado",bl);
+
+
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        mWebSocketClient.send(json.toString());
+
+
     }
 }
 

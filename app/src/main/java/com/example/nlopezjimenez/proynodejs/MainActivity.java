@@ -27,6 +27,10 @@ import java.util.HashMap;
 import java.util.Map;
 import org.json.JSONObject;
 import org.json.JSONException;
+
+import static com.example.nlopezjimenez.proynodejs.R.id.mensaje;
+import static com.example.nlopezjimenez.proynodejs.R.id.textmensaje;
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -150,7 +154,7 @@ public class MainActivity extends AppCompatActivity
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        TextView textView = (TextView)findViewById(R.id.text);
+                        TextView textView = (TextView)findViewById(R.id.textmensaje);
                         textView.setText(textView.getText() + "\n" + message);
                     }
                 });
@@ -172,10 +176,9 @@ public class MainActivity extends AppCompatActivity
     }
     public void sendMessage() {
 
-        EditText msg = (EditText)findViewById(R.id.message);
+        EditText msg = (EditText)findViewById(R.id.mensaje);
         EditText destin = (EditText)findViewById(R.id.destino);
         CheckBox box = (CheckBox)findViewById(R.id.priv);
-        msg.setText("");
         String d,m;
         Boolean bl;
         d = destin.getText().toString();
@@ -188,10 +191,11 @@ public class MainActivity extends AppCompatActivity
         JSONObject json = new JSONObject();
         try {
             json.put("id","Nabor");
-            json.put("message",m);
+            json.put("mensaje",m);
             json.put("destino",d);
             json.put("Privado",bl);
-
+            msg.setText("");
+            destin.setText("");
 
 
         } catch (JSONException e) {

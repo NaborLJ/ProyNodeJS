@@ -32,7 +32,9 @@ import static com.example.nlopezjimenez.proynodejs.R.id.mensaje;
 import static com.example.nlopezjimenez.proynodejs.R.id.textmensaje;
 
 public class MainActivity extends AppCompatActivity
+
         implements NavigationView.OnNavigationItemSelectedListener {
+    JSONObject json,clienteRX;
 
     private WebSocketClient mWebSocketClient;
 
@@ -151,11 +153,27 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onMessage(String s) {
                 final String message = s;
+
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         TextView textView = (TextView)findViewById(R.id.textmensaje);
-                        textView.setText(textView.getText() + "\n" + message);
+                        String nick;
+                        String msg;
+                        String dest;
+                        Boolean prv;
+                       try {
+                            clienteRX = new JSONObject(message);
+                            nick= clienteRX.getString("id");
+                            msg = clienteRX.getString("mensaje");
+                            dest= clienteRX.getString("destino");
+                            prv= clienteRX.getBoolean("Privado");
+                           textView.setText(textView.getText()+nick+ "," + msg +","+dest+","+prv);
+
+                        } catch (JSONException e) {
+                           textView.setText(textView.getText()+message);
+                        }
+
                     }
                 });
             }
@@ -188,7 +206,7 @@ public class MainActivity extends AppCompatActivity
         }else{
             bl = Boolean.FALSE;
         }
-        JSONObject json = new JSONObject();
+         json = new JSONObject();
         try {
             json.put("id","Nabor");
             json.put("mensaje",m);

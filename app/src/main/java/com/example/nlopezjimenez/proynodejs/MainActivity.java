@@ -168,10 +168,10 @@ public class MainActivity extends AppCompatActivity
                             msg = clienteRX.getString("mensaje");
                             dest= clienteRX.getString("destino");
                             prv= clienteRX.getBoolean("Privado");
-                           textView.setText(textView.getText()+nick+ "," + msg +","+dest+","+prv);
+                           textView.setText(textView.getText()+nick+ "," + msg +","+dest+","+prv+"\n");
 
                         } catch (JSONException e) {
-                           textView.setText(textView.getText()+message);
+                           textView.setText(textView.getText()+message+"\n");
                         }
 
                     }

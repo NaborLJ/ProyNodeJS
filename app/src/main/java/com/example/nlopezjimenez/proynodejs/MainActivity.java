@@ -134,7 +134,7 @@ public class MainActivity extends AppCompatActivity
 
         URI uri;
         try {
-            uri = new URI("ws://chat-naborlj.c9users.io:8081");
+            uri = new URI("ws://chat2-naborlj.c9users.io:8081");
         } catch (URISyntaxException e) {
             e.printStackTrace();
             return;
@@ -147,7 +147,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onOpen(ServerHandshake serverHandshake) {
                 Log.i("Websocket", "Opened");
-                mWebSocketClient.send("Hello from " + Build.MANUFACTURER + " " + Build.MODEL);
+                mWebSocketClient.send("{\"id\":\"" + Build.MANUFACTURER + "\"}");
             }
 
             @Override
@@ -208,10 +208,10 @@ public class MainActivity extends AppCompatActivity
         }
          json = new JSONObject();
         try {
-            json.put("id","Nabor");
-            json.put("mensaje",m);
-            json.put("destino",d);
-            json.put("Privado",bl);
+            json.put("\"id\"","\"Nabor\"");
+            json.put("\"mensaje\"","\"jiji\"");
+          //  json.put("\"destino\"",d);
+           // json.put("\"Privado\"",bl);
             msg.setText("");
             destin.setText("");
 

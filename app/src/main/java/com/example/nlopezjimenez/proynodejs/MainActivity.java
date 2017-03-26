@@ -1,5 +1,6 @@
 package com.example.nlopezjimenez.proynodejs;
 
+import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -7,6 +8,7 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -37,15 +39,16 @@ public class MainActivity extends AppCompatActivity
     JSONObject json,clienteRX;
 
     private WebSocketClient mWebSocketClient;
-
+    public static String nickname;
     private static final int MY_PERMISSIONS_REQUEST_INTERNET=1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        instrucciones();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        connectWebSocket();
+
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -57,8 +60,7 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                //       .setAction("Action", null).show();
+
                 sendMessage();
             }
         });
@@ -85,19 +87,17 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
+
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
+
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
+
         if (id == R.id.action_settings) {
             return true;
         }
@@ -108,20 +108,30 @@ public class MainActivity extends AppCompatActivity
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
+
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+        if (id == R.id.usuario) {
+            AlertDialog.Builder alert= new AlertDialog.Builder(this);
+            final EditText user=new EditText(this);
+            user.setSingleLine();
+            user.setPadding(50,0,50,0);
+            alert.setTitle("NickName");
+            alert.setMessage("Introducir NickName");
+            alert.setView(user);
+            alert.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
 
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
+                    nickname=user.getText().toString();
+                    if(nickname!=null){
+                        connectWebSocket();
+                    }
+                }
+            });
+            alert.setNegativeButton("Cancelar",null);
+            alert.create();
+            alert.show();
 
         }
 
@@ -147,13 +157,12 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onOpen(ServerHandshake serverHandshake) {
                 Log.i("Websocket", "Opened");
-                mWebSocketClient.send("{\"id\":\"" + Build.MANUFACTURER + "\"}");
+                mWebSocketClient.send("{\"id\":\"" + nickname+ "\"}");
             }
 
             @Override
             public void onMessage(String s) {
                 final String message = s;
-
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -168,12 +177,18 @@ public class MainActivity extends AppCompatActivity
                             msg = clienteRX.getString("mensaje");
                             dest= clienteRX.getString("destino");
                             prv= clienteRX.getBoolean("Privado");
-                           textView.setText(textView.getText()+nick+ "," + msg +","+dest+","+prv+"\n");
+                           if(prv.equals(Boolean.TRUE)){
+                               if(dest.equals(nickname)){
+                                   textView.setText(textView.getText() + "\n" + nick+ "\n" + msg);
+                               }
+                           }else
+                               textView.setText("Mensaje Privado");
 
-                        } catch (JSONException e) {
-                           textView.setText(textView.getText()+message+"\n");
-                        }
+                       }
+                       catch(JSONException e){
 
+                           textView.setText(textView.getText() + "\n" + message);
+                       }
                     }
                 });
             }
@@ -208,13 +223,12 @@ public class MainActivity extends AppCompatActivity
         }
          json = new JSONObject();
         try {
-            json.put("\"id\"","\"Nabor\"");
-            json.put("\"mensaje\"","\"jiji\"");
-          //  json.put("\"destino\"",d);
-           // json.put("\"Privado\"",bl);
+            json.put("id",nickname);
+            json.put("mensaje",m);
+            json.put("destino",d);
+            json.put("Privado",bl);
             msg.setText("");
             destin.setText("");
-
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -223,5 +237,16 @@ public class MainActivity extends AppCompatActivity
 
 
     }
+    public void instrucciones() {
+        AlertDialog.Builder build = new AlertDialog.Builder(this);
+        build.setTitle("Conexión");
+        build.setMessage(instruccioes);
+        build.setPositiveButton("Aceptar", null);
+        build.create();
+        build.show();
+    }
+    public String instruccioes = "Para poder establecer la conexión es necesario introducir un Nick.\n" +
+            "-Puedes introducir tu NickName en el menu lateral,en el icono del margen superior izquierdo.\n" +
+            "- Una vez introducido se conectará automaticamente.";
 }
 
